@@ -1,0 +1,43 @@
+version: '3'
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: "swagger-ui"
+    ports:
+      - "8004:8080"
+    volumes:
+      - ./openapi/auth.yaml:/auth.yaml
+    environment:
+      SWAGGER_JSON: /auth.yaml
+      BASE_URL: /docs
+
+  auth_api:
+    container_name: auth_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    restart: on-failure
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0.31
+    container_name: mysql_auth
+    ports:
+      - "15306:3306"
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/initdb:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: auth_db
+      MYSQL_ROOT_PASSWORD: password
+
+  redis:
+    image: "redis:7.0.8"
+    container_name: redis_auth
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./docker/redis/data:/data"

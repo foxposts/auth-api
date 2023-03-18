@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: AuthAPI
+  description: |
+    Using this OpenAPI specification, Authentication by OAuth2
+  version: 1.0.0
+servers:
+  - url: http://localhost:8083
+    description: dev server
+paths:
+  /login:
+    post:
+      tags:
+        - default
+      summary: User Authentication,Create accessToken and refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+            examples:
+              user1:
+                value:
+                  email: john24865@auth-app.com
+                  password: 1234A+hgy
+              user2:
+                value:
+                  email: alice23ak47@app.com
+                  password: 2y6:*td7wd+A
+      responses:
+        '200':
+          description: Return accessToken and refreshToken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+  /verify:
+    get:
+      tags:
+        - default
+      summary: Authentication by accessToken
+      parameters:
+        - name: token
+          in: query
+          schema:
+            type: string
+          example: >-
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImpvaG4yNDg2NUBhdXRoLWFwcC5jb20iLCJleHAiOjE2NzkwNzM1OTV9.eKS7rRjbxmjI4jZ1ckOf3Uc47AQlD1i2XuAJ3TELxhk
+      responses:
+        '200':
+          description: Verify token successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isAuthorized:
+                    type: boolean
+  /refresh:
+    post:
+      tags:
+        - default
+      summary: Refresh accessToken and refreshToken
+      description: |
+        This time, Refreshing refreshToken as well  (whether to refresh refreshToken or not depends on the requirements.)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                refresh_token: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsInVzZXJfaWQiOjEsImVtYWlsIjoiam9objI0ODY1QGF1dGgtYXBwLmNvbSIsImV4cCI6MTY4MTY2MTk5NX0.oYFVBdFH7KqGQ78F_VE5Ckl8a9vWFnB8l9sg8IqBfCg
+      responses:
+        '200':
+          description: Return accessToken and refreshToken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+  /logout:
+    post:
+      tags:
+        - default
+      summary: Delete accessToken and refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                access_token: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImpvaG4yNDg2NUBhdXRoLWFwcC5jb20iLCJleHAiOjE2NzkwNzM1OTV9.eKS7rRjbxmjI4jZ1ckOf3Uc47AQlD1i2XuAJ3TELxhk
+      responses:
+        '204':
+          description: Logout App successfully
+components:
+  schemas:
+    Login:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        password:
+          type: "string"
